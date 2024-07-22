@@ -1,24 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import BackendService from './services/BackendService'; 
 
 function App() {
+  const [testData, setTestData] = useState({ title: '', content: '' });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await BackendService.getTestData(); 
+        setTestData(data); 
+      } catch (error) {
+        console.error('Failed to fetch test data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <header>
+        <h1>{testData.title}</h1>
       </header>
+      <div>
+        {testData.content}
+      </div>
     </div>
   );
 }
