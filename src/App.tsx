@@ -7,17 +7,18 @@ function App() {
   const [notesData, setNotesData] = useState<NoteData[]>([]);
   const [newNote, setNewNote] = useState<NoteData>({ title: "", content: "" });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const notes = await BackendService.getNotesData();
-        setNotesData(notes);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      }
-    };
+  const fetchNotes = async () => {
+    try {
+      const notes = await BackendService.getNotesData();
+      setNotesData(notes);
+    } catch (error) {
+      console.error("Failed to fetch notes:", error);
+    }
+  };
 
-    fetchData();
+
+  useEffect(() => {  
+    fetchNotes();
   }, []);
 
   const handleNoteChange = (
@@ -34,6 +35,7 @@ function App() {
     event.preventDefault();
     await BackendService.postNoteData(newNote);
     setNewNote({ title: '', content: '' }); 
+    await fetchNotes();
   };
 
   return (
