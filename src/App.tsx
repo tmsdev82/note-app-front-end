@@ -38,6 +38,15 @@ function App() {
     await fetchNotes();
   };
 
+  const handleDelete = async (index: number) => {
+    try {
+      await BackendService.deleteNoteData(index);
+      await fetchNotes();
+    } catch (error) {
+      console.error("Failed to delete and fetch notes:", error);
+    }
+  } 
+
   return (
     <div className="App">
       <header>
@@ -72,7 +81,10 @@ function App() {
             {notesData.map((note, index) => (
               <div key={index} className="note-card">
                 <h3>{note.title}</h3>
-                <p>{note.content}</p>
+                <p>{note.content}</p>   
+                <section>
+                  <button onClick={() => handleDelete(index)}>delete</button>
+                </section>            
               </div>
             ))}
           </div>

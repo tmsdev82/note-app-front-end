@@ -49,6 +49,20 @@ class BackendService {
       throw new Error('Failed to post note data to the backend');
     }
   }
+
+  public async deleteNoteData(index: number): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseURL}/notes/${index}`, {
+        method: 'DELETE'
+        
+      });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error('Failed to delete note data in the backend');
+    }
+  }
 }
 
 
