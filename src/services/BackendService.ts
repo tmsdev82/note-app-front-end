@@ -32,6 +32,23 @@ class BackendService {
       throw new Error('Failed to fetch note data from the backend');
     }
   }
+
+  public async postNoteData(noteData: NoteData): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseURL}/notes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(noteData),
+      });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error('Failed to post note data to the backend');
+    }
+  }
 }
 
 
