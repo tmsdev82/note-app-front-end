@@ -1,4 +1,4 @@
-export interface TestData {
+export interface NoteData {
     title: string;
     content: string;
   }
