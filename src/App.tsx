@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import BackendService from "./services/BackendService";
 import { NoteData } from "./models/NoteData";
+import NoteFormComponent from "./components/noteFormComponent";
 
 function App() {
   const [notesData, setNotesData] = useState<NoteData[]>([]);
   const [newNote, setNewNote] = useState<NoteData>({ title: "", content: "" });
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const fetchNotes = async () => {
     try {
@@ -16,26 +18,21 @@ function App() {
     }
   };
 
-
   useEffect(() => {  
     fetchNotes();
   }, []);
 
-  const handleNoteChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = event.target;
-    setNewNote((prevNote) => ({
-      ...prevNote,
-      [name]: value,
-    }));
+  const handleFormSubmit = async () => {
+    setEditingIndex(null);
+    await fetchNotes();
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    await BackendService.postNoteData(newNote);
-    setNewNote({ title: '', content: '' }); 
-    await fetchNotes();
+  const handleFormCancel = () => {
+    setEditingIndex(null);
+  }
+
+  const handleEdit = (index: number) => {
+    setEditingIndex(index);
   };
 
   const handleDelete = async (index: number) => {
@@ -53,26 +50,9 @@ function App() {
         <h1>Notes App</h1>
       </header>
       <section>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <input
-              type="text"
-              name="title"
-              placeholder="Title"
-              value={newNote.title}
-              onChange={handleNoteChange}
-            />
-          </div>
-          <div>
-            <textarea
-              name="content"
-              placeholder="Content"
-              value={newNote.content}
-              onChange={handleNoteChange}
-            />
-          </div>
-          <button type="submit">Submit Note</button>
-        </form>
+        {editingIndex === null && (
+          <NoteFormComponent initialNote={newNote} index={null} isEdit={false} onSubmit={handleFormSubmit} onCancel={handleFormCancel} />
+        )}
       </section>
       <section>
         <h2>Notes</h2>
@@ -80,12 +60,19 @@ function App() {
           <div className="notes-container">
             {notesData.map((note, index) => (
               <div key={index} className="note-card">
-                <h3>{note.title}</h3>
-                <p>{note.content}</p>   
-                <section>
-                  <button onClick={() => handleDelete(index)}>delete</button>
-                </section>            
-              </div>
+              {editingIndex === index ? (
+                <NoteFormComponent initialNote={note} index={index} isEdit={true} onSubmit={handleFormSubmit} onCancel={handleFormCancel}/>
+              ) : (
+                <>
+                  <h3>{note.title}</h3>
+                  <p>{note.content}</p>
+                  <section>
+                    <button onClick={() => handleEdit(index)}>Edit</button>
+                    <button onClick={() => handleDelete(index)}>Delete</button>
+                  </section>
+                </>
+              )}
+            </div>
             ))}
           </div>
         ) : (

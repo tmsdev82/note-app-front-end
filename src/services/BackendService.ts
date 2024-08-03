@@ -63,6 +63,23 @@ class BackendService {
       throw new Error('Failed to delete note data in the backend');
     }
   }
+
+  public async updateNoteData(index: number, noteData: NoteData): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseURL}/notes/${index}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(noteData),
+      });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error('Failed to update note data in the back end');
+    }
+  }
 }
 
 
